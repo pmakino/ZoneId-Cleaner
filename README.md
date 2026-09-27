@@ -1,6 +1,6 @@
 # ZoneId Cleaner
 
-インターネット等からダウンロードしたファイルに自動付与される Mark Of The Web (`Zone.Identifier` 代替ストリーム、ZoneId) をドラッグ&ドロップで一括解除する Windows 向けバッチファイルです。
+インターネット等からダウンロードしたファイルに自動付与される Mark of the Web (`Zone.Identifier` 代替ストリーム、ZoneId) をドラッグ&ドロップで一括解除する Windows 向けバッチファイルです。
 
 ---
 
