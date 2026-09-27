@@ -1,6 +1,6 @@
 @echo off
 setlocal
-echo ZoneID 一括削除ツール
+echo ZoneID 一括解除ツール
 echo.
 
 if "%~1"=="" (
