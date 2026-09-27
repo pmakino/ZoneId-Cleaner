@@ -1,6 +1,6 @@
 # ZoneID Cleaner
 
-インターネット等からダウンロードしたファイルに自動付与される MOTW (`Zone.Identifier` 代替ストリーム、通称 ZoneId) をドラッグ&ドロップで一括解除する Windows 向けバッチファイルです。
+インターネット等からダウンロードしたファイルに自動付与される MOTW (`Zone.Identifier` 代替ストリーム、通称 ZoneID) をドラッグ&ドロップで一括解除する Windows 向けバッチファイルです。
 
 ---
 
