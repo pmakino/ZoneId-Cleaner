@@ -11,7 +11,15 @@ function Remove-ZoneIdentifier {
     param([string]$FilePath)
     $hasZone = Get-Item -LiteralPath $FilePath -Stream Zone.Identifier -ErrorAction SilentlyContinue
     if ($hasZone) {
-        $lp = '\\?\' + $FilePath + ':Zone.Identifier'
+        if ($FilePath.StartsWith('\\?\')) {
+            $prefixed = $FilePath
+        } elseif ($FilePath.StartsWith('\\')) {
+            # UNC パス: \\server\share -> \\?\UNC\server\share
+            $prefixed = '\\?\UNC\' + $FilePath.Substring(2)
+        } else {
+            $prefixed = '\\?\' + $FilePath
+        }
+        $lp = $prefixed + ':Zone.Identifier'
         $ok = [ZoneUtil]::DeleteFile($lp)
         if ($ok) {
             Write-Host ('  [解除成功] ' + $FilePath) -ForegroundColor Green
