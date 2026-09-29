@@ -1,11 +1,19 @@
-﻿Add-Type -TypeDefinition @'
+﻿# 型が未定義の場合のみ定義する。定義に失敗したら原因を表示して終了する
+if (-not ('ZoneUtil' -as [type])) {
+    try {
+        Add-Type -ErrorAction Stop -TypeDefinition @'
 using System;
 using System.Runtime.InteropServices;
 public class ZoneUtil {
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true)]
     public static extern bool DeleteFile(string p);
 }
-'@ -ErrorAction SilentlyContinue
+'@
+    } catch {
+        Write-Host ('Win32 API の読み込みに失敗しました: ' + $_.Exception.Message) -ForegroundColor Red
+        exit 1
+    }
+}
 
 $script:Count = @{ Success = 0; Failure = 0; Skipped = 0 }
 
