@@ -59,14 +59,14 @@ static class ZoneUtil
         try { prefixed = ToExtended(path); }
         catch (Exception ex)
         {
-            message = "[解除失敗] " + ToDisplay(path) + " (" + ex.Message + ")";
+            message = Res.F("log_failed", ToDisplay(path), ex.Message);
             return Result.Failure;
         }
         string full = ToDisplay(prefixed);
 
         if (DeleteFile(prefixed + ":Zone.Identifier"))
         {
-            message = "[解除成功] " + full;
+            message = Res.F("log_removed", full);
             return Result.Success;
         }
 
@@ -74,10 +74,10 @@ static class ZoneUtil
         // ファイルまたはストリームが存在しない = 解除不要
         if (code == 2 || code == 3)
         {
-            message = "[解除不要] " + full;
+            message = Res.F("log_not_needed", full);
             return Result.Skipped;
         }
-        message = "[解除失敗] " + full + " (エラー " + code + ": " + new Win32Exception(code).Message + ")";
+        message = Res.F("log_failed_code", full, code, new Win32Exception(code).Message);
         return Result.Failure;
     }
 }
@@ -95,7 +95,7 @@ class MainForm : Form
     readonly float systemDpi;  // システム DPI(Font のピクセル数の基準になる)
     int success, failure, skipped;
     readonly Queue<KeyValuePair<string, Color>> pending = new Queue<KeyValuePair<string, Color>>();
-    readonly Button bCancel = new Button { Text = "中断", AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, Enabled = false };
+    readonly Button bCancel = new Button { Text = Res.T("btn_cancel"), AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, Enabled = false };
     int currentDpi = 96;       // 現在 ApplyDpi で反映している DPI
     readonly FlowLayoutPanel buttons = new FlowLayoutPanel();
     readonly Panel logHost = new Panel();
@@ -106,7 +106,7 @@ class MainForm : Form
         // 大きさ・余白・フォントは WinForms の自動拡大に頼らず、ウィンドウの実際の DPI から ApplyDpi で決める
         // (自動拡大はシステム DPI を基準にするため、DPI の異なるモニターで起動・移動すると大きさが狂う)
         SuspendLayout();
-        Text = "ZoneId 一括解除ツール";
+        Text = Res.T("title");
         // Windows の UI フォント設定に従う。実際の DPI への合わせ込みは ApplyDpi で行う
         uiFontFamily = SystemFonts.MessageBoxFont.FontFamily;
         uiFontPt = SystemFonts.MessageBoxFont.SizeInPoints;
@@ -116,9 +116,9 @@ class MainForm : Form
         try { Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch { }
 
         buttons.Dock = DockStyle.Bottom;
-        var bFile = new Button { Text = "ファイルを選択...", AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink };
-        var bFolder = new Button { Text = "フォルダーを選択...", AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink };
-        var bClear = new Button { Text = "ログをクリア", AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink };
+        var bFile = new Button { Text = Res.T("btn_file"), AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink };
+        var bFolder = new Button { Text = Res.T("btn_folder"), AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink };
+        var bClear = new Button { Text = Res.T("btn_clear"), AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink };
         bFile.Click += delegate { PickFiles(); };
         bFolder.Click += delegate { PickFolder(); };
         bClear.Click += delegate { ShowHint(); };
@@ -141,7 +141,7 @@ class MainForm : Form
         log.AllowDrop = true;
 
         // 操作説明は一覧領域の上に重ねた Label で、上下左右中央に表示する
-        hint.Text = "Zone.Identifier を解除したいファイルまたはフォルダーを、\nこのウィンドウにドロップしてください(複数可)。";
+        hint.Text = Res.T("hint");
         hint.Dock = DockStyle.Fill;
         hint.TextAlign = ContentAlignment.MiddleCenter;
         hint.ForeColor = Color.Gray;
@@ -209,13 +209,13 @@ class MainForm : Form
         Shown += delegate { if (args.Length > 0) Enqueue(args); };
     }
 
-    // 日本語を含む全行を同じフォントで描くため、日本語対応の等幅フォントを選ぶ
-    // (Consolas は日本語の字形がなく、行ごとにフォントが入れ替わってしまう)
+    // ログ欄の等幅フォント。書体は言語別に Res の log_font で決める
+    // (日本語は、Consolas に日本語の字形がなく行ごとにフォントが入れ替わってしまうため、MS ゴシックにしている)
     // 大きさは Windows の UI フォントと同じにする
     // (システムフォントに等幅のものはないため、書体だけ等幅フォントにする)
     static Font LogFont(float size)
     {
-        try { return new Font(new FontFamily("MS Gothic"), size); }
+        try { return new Font(new FontFamily(Res.T("log_font")), size); }
         catch (ArgumentException) { return new Font(FontFamily.GenericMonospace, size); }
     }
 
@@ -310,7 +310,7 @@ class MainForm : Form
 
     void PickFiles()
     {
-        using (var d = new OpenFileDialog { Multiselect = true, Title = "ファイルを選択" })
+        using (var d = new OpenFileDialog { Multiselect = true, Title = Res.T("dlg_files") })
             if (d.ShowDialog(this) == DialogResult.OK) Enqueue(d.FileNames);
     }
 
@@ -359,18 +359,17 @@ class MainForm : Form
             try { ext = ZoneUtil.ToExtended(target); } catch { }
             if (ext != null && Directory.Exists(ext))
             {
-                Log("[FOLDER] " + target + " 内のファイルを処理中...", Color.Black);
+                Log(Res.F("log_folder", target), Color.Black);
                 ProcessFolder(ext);
             }
             else
             {
-                Log("[FILE] " + target, Color.Black);
+                Log(Res.F("log_file", target), Color.Black);
                 ProcessFile(target);
             }
         }
         Log("", Color.Black);
-        Log(string.Format("処理を{0}しました。(成功 {1} / 失敗 {2} / 解除不要 {3})", cancelled ? "中断" : "完了", s, f, k),
-            f > 0 ? Color.Red : Color.Black);
+        Log(Res.F(cancelled ? "cancelled" : "done", s, f, k), f > 0 ? Color.Red : Color.Black);
     }
 
     void ProcessFolder(string folder)
@@ -383,7 +382,7 @@ class MainForm : Form
         }
         catch (Exception ex)
         {
-            Log("  [列挙失敗] " + ZoneUtil.ToDisplay(folder) + " (" + ex.Message + ")", Color.Red);
+            Log("  " + Res.F("log_enum_failed", ZoneUtil.ToDisplay(folder), ex.Message), Color.Red);
             Count(ZoneUtil.Result.Failure);
             return;
         }

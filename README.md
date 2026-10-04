@@ -1,68 +1,77 @@
 # ZoneId Cleaner
 
-インターネット等からダウンロードしたファイルに自動付与される Mark of the Web (`Zone.Identifier` 代替ストリーム、`ZoneId`) を、一括解除する Windows アプリです。
+**English** | [日本語](README.ja.md)
+
+A Windows app that removes the Mark of the Web (the `Zone.Identifier` alternate data stream, or "ZoneId") that is automatically attached to files downloaded from the internet, in bulk.
 
 ---
 
-## 特徴
+## Features
 
-- **ドラッグ&ドロップ**: ファイルやフォルダーを、次のどちらにドロップしても処理できます。複数の項目をまとめてドロップすることもできます。
-  - `ZoneId-Cleaner.exe` のアイコン (起動して、そのまま処理します)
-  - 起動中のアプリのウィンドウ (どこにドロップしても受け付けます)
-- **ロングパス対応**: 拡張パス (`\\?\`) を利用し、260 文字以上のパスや `\\server\share\...` 形式のパスにも対応します。
-- **Unicode 対応**: Shift_JIS (cp932) の範囲外の文字を含むパスも扱えます。
-- **高 DPI 対応**: 画面の拡大率に合わせて表示します。拡大率の異なるモニター間を移動しても、文字やウィンドウの大きさが追随します。
-- **軽量**: .NET Framework を利用し、起動・処理ともに高速に動作します。
-
----
-
-## 使い方
-
-1. `ZoneId-Cleaner.exe` を用意します (入手方法は下記)。インストールは不要です。
-2. ZoneId を解除したいファイルまたはフォルダー (複数可) を、次のいずれかの方法で指定します。
-   - `ZoneId-Cleaner.exe` のアイコンにドロップする
-   - `ZoneId-Cleaner.exe` を起動し、ウィンドウにドロップする
-   - `ZoneId-Cleaner.exe` を起動し、「ファイルを選択...」「フォルダーを選択...」ボタンで指定する
-3. 一覧領域に以下の通り処理結果が表示されます。
-  - 🟩 `[解除成功]` : ZoneId が存在し、正常に解除されたファイル
-  - 🟥 `[解除失敗]` : 権限不足等で解除に失敗したファイル
-  - ⬜ `[解除不要]` : もともと ZoneId が存在しないファイル
-
+- **Drag & drop**: Drop files or folders onto either of the following. You can drop multiple items at once.
+  - The `ZoneId-Cleaner.exe` icon (the app starts and processes them right away)
+  - The window of the running app (anywhere in the window is accepted)
+- **Long path support**: Uses extended-length paths (`\\?\`), so paths of 260 characters or more and UNC paths such as `\\server\share\...` also work.
+- **Unicode support**: Paths containing characters outside the Shift_JIS (cp932) range are handled correctly.
+- **High DPI support**: The window follows the display scaling. Text and window size adapt when you move it between monitors with different scaling.
+- **Multilingual**: The UI is shown in Japanese or English, following the Windows display language. Any other display language falls back to English.
+- **Lightweight**: Built on .NET Framework; starts and runs fast.
 
 ---
 
-## 動作環境
+## Usage
 
-- OS: Windows 10 (バージョン 1803 以降) / Windows 11
-- .NET Framework 4.7.2 以降 (Windows 11 には標準で搭載されています)
+1. Get `ZoneId-Cleaner.exe` (see below). No installation is required.
+2. Specify the files or folders (multiple allowed) whose ZoneId you want to remove, in any of these ways:
+   - Drop them onto the `ZoneId-Cleaner.exe` icon
+   - Start `ZoneId-Cleaner.exe` and drop them onto its window
+   - Start `ZoneId-Cleaner.exe` and use the "Select files..." / "Select folders..." buttons
+3. The results are shown in the list area as follows:
+   - 🟩 `[Removed]` : The file had a ZoneId and it was removed successfully
+   - 🟥 `[Failed]` : The ZoneId could not be removed (for example, insufficient permissions)
+   - ⬜ `[Not needed]` : The file had no ZoneId to begin with
 
-### 注意
-
-- 管理者として実行しているアプリには、通常権限のエクスプローラーからドラッグ&ドロップできません (Windows の仕様です)。通常の権限で起動してください。
-- 署名のない実行ファイルのため、環境によっては Windows の SmartScreen による警告が表示されることがあります。
+   While a large number of files is being processed, you can stop with the "Cancel" button.
 
 ---
 
-## ビルド方法
+## Requirements
 
-Windows に標準で含まれる C# コンパイラ (`csc.exe`) を使います。追加のツールのインストールは不要です。
+- OS: Windows 10 (version 1803 or later) / Windows 11
+- .NET Framework 4.7.2 or later (included with Windows 11)
+
+### Notes
+
+- You cannot drag & drop from a normal (non-elevated) Explorer onto an app running as administrator (a Windows restriction). Start the app without elevated privileges.
+- The executable is not code-signed, so Windows SmartScreen may show a warning depending on your environment.
+
+---
+
+## Building
+
+The build uses the C# compiler (`csc.exe`) that ships with Windows. No additional tools are needed.
 
 ```
 build.bat
 ```
 
-`ZoneId-Cleaner.exe` が生成されます。ビルドには次のファイルを使います。
+This produces `ZoneId-Cleaner.exe`. The build uses these files:
 
-| ファイル | 内容 |
+| File | Description |
 | --- | --- |
-| `ZoneId-Cleaner.cs` | アプリ本体のソース |
-| `ZoneId-Cleaner.ico` | アプリのアイコン |
-| `ZoneId-Cleaner.manifest` | 高 DPI 対応の宣言 |
-| `build.bat` | ビルド用バッチ |
-| `make-icon.cs` | アイコン (`.ico`) を作り直すためのソース (通常のビルドには不要) |
+| `ZoneId-Cleaner.cs` | Application source |
+| `ZoneId-Cleaner.Strings.cs` | Per-language table of UI strings (Japanese and English) |
+| `ZoneId-Cleaner.ico` | Application icon |
+| `ZoneId-Cleaner.manifest` | High DPI declaration |
+| `build.bat` | Build script |
+| `make-icon.cs` | Source for regenerating the icon (`.ico`); not needed for a normal build |
+
+### Adding a language
+
+In `ZoneId-Cleaner.Strings.cs`, add a dictionary with the same keys as the English one (`En`), and add one `case` for the language in `Select()`. Any missing key is shown in English.
 
 ---
 
-## ライセンス
+## License
 
 [MIT License](LICENSE)
