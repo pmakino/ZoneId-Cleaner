@@ -14,6 +14,7 @@ static class Res
         { "btn_file",       "Select files..." },
         { "btn_folder",     "Select folders..." },
         { "btn_clear",      "Clear log" },
+        { "btn_close",      "Close" },
         { "btn_cancel",     "Cancel" },
         { "dlg_files",      "Select files" },
         { "hint",           "Drop files or folders here to remove their Zone.Identifier.\n(Multiple items allowed.)" },
@@ -23,10 +24,13 @@ static class Res
 
         { "log_folder",     "[FOLDER] {0} : processing files..." },
         { "log_file",       "[FILE] {0}" },
+        // 指定されたものが存在せず、ファイルかフォルダーか判別できないとき
+        { "log_path",       "[PATH] {0}" },
         { "log_removed",    "[Removed] {0}" },
         { "log_not_needed", "[Not needed] {0}" },
         { "log_failed",     "[Failed] {0} ({1})" },
         { "log_failed_code","[Failed] {0} (error {1}: {2})" },
+        { "err_not_found",  "not found" },
         { "log_enum_failed","[Cannot list] {0} ({1})" },
 
         // 完了・中断のメッセージ。{0} 成功 / {1} 失敗 / {2} 解除不要
@@ -40,6 +44,7 @@ static class Res
         { "btn_file",       "ファイルを選択..." },
         { "btn_folder",     "フォルダーを選択..." },
         { "btn_clear",      "ログをクリア" },
+        { "btn_close",      "閉じる" },
         { "btn_cancel",     "中断" },
         { "dlg_files",      "ファイルを選択" },
         { "hint",           "Zone.Identifier を解除したいファイルまたはフォルダーを、\nこのウィンドウにドロップしてください(複数可)。" },
@@ -49,10 +54,12 @@ static class Res
 
         { "log_folder",     "[FOLDER] {0} 内のファイルを処理中..." },
         { "log_file",       "[FILE] {0}" },
+        { "log_path",       "[PATH] {0}" },
         { "log_removed",    "[解除成功] {0}" },
         { "log_not_needed", "[解除不要] {0}" },
         { "log_failed",     "[解除失敗] {0} ({1})" },
         { "log_failed_code","[解除失敗] {0} (エラー {1}: {2})" },
+        { "err_not_found",  "見つかりません" },
         { "log_enum_failed","[列挙失敗] {0} ({1})" },
 
         { "done",           "処理を完了しました。(成功 {0} / 失敗 {1} / 解除不要 {2})" },

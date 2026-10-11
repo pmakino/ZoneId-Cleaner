@@ -44,6 +44,13 @@ static class ZoneUtil
         return @"\\?\" + full;
     }
 
+    // ファイルまたはフォルダーが実在するか(拡張パスで確認する)
+    static bool Exists(string extendedPath)
+    {
+        try { return File.Exists(extendedPath) || Directory.Exists(extendedPath); }
+        catch { return false; }
+    }
+
     // 表示用に \\?\ を取り除く
     public static string ToDisplay(string path)
     {
@@ -71,11 +78,19 @@ static class ZoneUtil
         }
 
         int code = Marshal.GetLastWin32Error();
-        // ファイルまたはストリームが存在しない = 解除不要
+        // 「見つからない」(2, 3) は、ファイルはあるが Zone.Identifier がない場合と、
+        // ファイルやフォルダー自体が存在しない場合の両方で返るため、実在を確認して区別する。
+        // 実在して Zone.Identifier がないなら解除不要。存在しないなら失敗(見つからない)として扱う
+        // (OS のメッセージは「ファイルが見つかりません」とファイルに限った表現になるため、使わない)
         if (code == 2 || code == 3)
         {
-            message = Res.F("log_not_needed", full);
-            return Result.Skipped;
+            if (Exists(prefixed))
+            {
+                message = Res.F("log_not_needed", full);
+                return Result.Skipped;
+            }
+            message = Res.F("log_failed", full, Res.T("err_not_found"));
+            return Result.Failure;
         }
         message = Res.F("log_failed_code", full, code, new Win32Exception(code).Message);
         return Result.Failure;
@@ -119,13 +134,15 @@ class MainForm : Form
         var bFile = new Button { Text = Res.T("btn_file"), AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink };
         var bFolder = new Button { Text = Res.T("btn_folder"), AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink };
         var bClear = new Button { Text = Res.T("btn_clear"), AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink };
+        var bClose = new Button { Text = Res.T("btn_close"), AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink };
         bFile.Click += delegate { PickFiles(); };
         bFolder.Click += delegate { PickFolder(); };
         bClear.Click += delegate { ShowHint(); };
+        bClose.Click += delegate { Close(); };
         // 右寄せ（RightToLeft では先に追加したものが右端になる）
         buttons.FlowDirection = FlowDirection.RightToLeft;
         bCancel.Click += delegate { Cancel(); };
-        buttons.Controls.AddRange(new Control[] { bClear, bFolder, bFile, bCancel });
+        buttons.Controls.AddRange(new Control[] { bClose, bClear, bFolder, bFile, bCancel });
 
         // ログ表示の更新と中断ボタンの有効/無効を、一定間隔でまとめて反映する
         var timer = new System.Windows.Forms.Timer { Interval = 100 };
@@ -364,7 +381,9 @@ class MainForm : Form
             }
             else
             {
-                Log(Res.F("log_file", target), Color.Black);
+                // 存在しないものは、ファイルかフォルダーか判別できないため、汎用の接頭辞にする
+                bool isFile = ext != null && File.Exists(ext);
+                Log(Res.F(isFile ? "log_file" : "log_path", target), Color.Black);
                 ProcessFile(target);
             }
         }
