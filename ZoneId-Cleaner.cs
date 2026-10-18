@@ -139,10 +139,14 @@ class MainForm : Form
         bFolder.Click += delegate { PickFolder(); };
         bClear.Click += delegate { ShowHint(); };
         bClose.Click += delegate { Close(); };
-        // 右寄せ（RightToLeft では先に追加したものが右端になる）
-        buttons.FlowDirection = FlowDirection.RightToLeft;
         bCancel.Click += delegate { Cancel(); };
-        buttons.Controls.AddRange(new Control[] { bClose, bClear, bFolder, bFile, bCancel });
+        // 右寄せ（RightToLeft では先に追加したものが右端になる）
+        // 見た目の並びは左から: ファイルを選択 / フォルダーを選択 / 中断 / ログをクリア / 閉じる
+        buttons.FlowDirection = FlowDirection.RightToLeft;
+        buttons.Controls.AddRange(new Control[] { bClose, bClear, bCancel, bFolder, bFile });
+        // Tab キーの移動順は、追加順(右から左)ではなく、見た目の並び(左から右)にそろえる
+        var visualOrder = new Control[] { bFile, bFolder, bCancel, bClear, bClose };
+        for (int i = 0; i < visualOrder.Length; i++) visualOrder[i].TabIndex = i;
 
         // ログ表示の更新と中断ボタンの有効/無効を、一定間隔でまとめて反映する
         var timer = new System.Windows.Forms.Timer { Interval = 100 };
