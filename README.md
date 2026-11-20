@@ -21,7 +21,7 @@ A Windows app that removes the Mark of the Web (the `Zone.Identifier` alternate 
 
 ## Usage
 
-1. Get `ZoneId-Cleaner.exe` (see below). No installation is required.
+1. Get `ZoneId-Cleaner.exe`. No installation is required.
 2. Specify the files or folders (multiple allowed) whose ZoneId you want to remove, in any of these ways:
    - Drop them onto the `ZoneId-Cleaner.exe` icon
    - Start `ZoneId-Cleaner.exe` and drop them onto its window

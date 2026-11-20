@@ -21,7 +21,7 @@
 
 ## 使い方
 
-1. `ZoneId-Cleaner.exe` を用意します (入手方法は下記)。インストールは不要です。
+1. `ZoneId-Cleaner.exe` を用意します。インストールは不要です。
 2. ZoneId を解除したいファイルまたはフォルダー (複数可) を、次のいずれかの方法で指定します。
    - `ZoneId-Cleaner.exe` のアイコンにドロップする
    - `ZoneId-Cleaner.exe` を起動し、ウィンドウにドロップする
