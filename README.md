@@ -31,8 +31,6 @@ A Windows app that removes the Mark of the Web (the `Zone.Identifier` alternate 
    - 🟥 `[Failed]` : The ZoneId could not be removed (for example, insufficient permissions)
    - ⬜ `[Not needed]` : The file had no ZoneId to begin with
 
-   While a large number of files is being processed, you can stop with the "Cancel" button.
-
 ---
 
 ## Requirements

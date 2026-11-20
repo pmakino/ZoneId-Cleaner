@@ -499,6 +499,20 @@ class MainForm : Form
         sb.Length = 0;
     }
 
+    // Esc キー: 処理中なら中断、待機中・完了後ならウィンドウを閉じる
+    protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+    {
+        if (keyData == Keys.Escape)
+        {
+            bool isRunning;
+            lock (queue) isRunning = running;
+            if (isRunning) Cancel();
+            else Close();
+            return true;
+        }
+        return base.ProcessCmdKey(ref msg, keyData);
+    }
+
     void Cancel()
     {
         lock (queue)
